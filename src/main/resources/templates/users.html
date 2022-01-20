@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>User list</title>
+    <style>table th, table td {
+        padding: 5px;
+    }</style>
+</head>
+<body>
+<h1 th:align="center">User Data</h1>
+<table th:align="center" border="1">
+    <tr>
+        <th>id</th>
+        <th>first name</th>
+        <th>last name</th>
+        <th>email</th>
+        <th>Update</th>
+        <th>Delete</th>
+        <th>Role</th>
+        <th>OUT</th>
+
+    </tr>
+
+    <tr th:each="user: ${users}">
+        <td th:utext="${user.id}">id</td>
+        <td th:utext="${user.firstName}">First name</td>
+        <td th:utext="${user.lastName}">Last name</td>
+        <td th:utext="${user.email}">Email</td>
+        <td><a th:href="@{/admin/update(id=${user.id})}">Update</a></td>
+        <td><a th:href="@{/admin/delete(id=${user.id})}">Delete</a></td>
+        >
+        <td th:align="center" th:utext="${user.roles}">Roles</td>
+        <p th:align="center" th:each="role,stat:${user.getRoles()}">
+            <input type="text" th:name="roles[__${stat.index}__].id" th:value="${role.getId()}">
+            <input type="text" th:name="roles[__${stat.index}__].role" th:value="${role.getRole()}">
+        </p>
+        <td><a th:href="@{/logout}">Logout</a></td>
+
+    </tr>
+</table>
+
+<form  th:align="center" th:method="POST" th:action="@{/admin/add}" th:object="${user}">
+    <div>
+        <label for="firstName">First name</label>
+        <input type="text" th:field="*{firstName}" id="firstName">
+
+        <br>
+
+        <label for="lastName">Last name</label>
+        <input type="text" th:field="*{lastName}" id="lastName">
+
+        <br>
+
+        <label for="email">Email</label>
+        <input type="text" th:field="*{email}" id="email">
+
+        <br>
+
+        <label for="login">Login</label>
+        <input type="text" th:field="*{login}" id="login">
+
+        <br>
+
+        <label for="password">Password</label>
+        <input type="text" th:field="*{password}" id="password">
+
+        <br>
+
+        <label for="role">Role</label>
+        <input type="text" th:name="role" id="role">
+
+        <br>
+
+        <input type="submit" value="Add user"/>
+    </div>
+</form>
+
+</form>
+</body>
+</html>

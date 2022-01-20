@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Loop</title>
+    <style>table th, table td {
+        padding: 5px;
+    }</style>
+</head>
+<body>
+<form th:method="POST" th:action="@{/admin/delete/{id}(id=${id})}" th:object="${id}">
+    <div>
+        <input type="submit" value="Delete"/>
+    </div>
+    <td><a th:href="@{/logout}">Logout</a></td>
+</form>
+</body>
+</html>

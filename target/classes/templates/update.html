@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Loop</title>
+    <style>table th, table td {
+        padding: 5px;
+    }</style>
+</head>
+<body>
+<form th:method="POST" th:action="@{/admin/update/{id}(id=${user.id})}" th:object="${user}">
+    <td><a th:href="@{/logout}">Logout</a></td>
+    <div>
+        <label for="firstName">First name</label>
+        <input type="text" th:field="*{firstName}" id="firstName" placeholder="Firt name">
+
+        <br>
+
+        <label for="lastName">Last name</label>
+        <input type="text" th:field="*{lastName}" id="lastName" placeholder="Last name">
+
+        <br>
+
+        <label for="email">Email</label>
+        <input type="text" th:field="*{email}" id="email" placeholder="Email">
+
+        <br>
+
+        <label for="login">Login</label>
+        <input type="text" th:field="*{login}" id="login">
+
+        <br>
+
+        <label for="password">Password</label>
+        <input type="text" th:field="*{password}" id="password">
+
+        <input type="submit" value="Update"/>
+    </div>
+</form>
+</body>
+</html>
