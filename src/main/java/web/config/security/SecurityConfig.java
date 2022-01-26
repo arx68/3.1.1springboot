@@ -7,24 +7,80 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import web.config.handler.LoginSuccessHandler;
-
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
+    private final LoginSuccessHandler loginSuccessHandler;
 
-    public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
+    public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService, LoginSuccessHandler loginSuccessHandler) {
         this.userDetailsService = userDetailsService;
+        this.loginSuccessHandler = loginSuccessHandler;
     }
 
     @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication().withUser("admin").password("admin").roles("ADMIN");
+    }
+
+    /*@Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    }
+
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+    }*/
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // http.csrf().disable(); - попробуйте выяснить сами, что это даёт
+        http
+                .authorizeRequests()
+                .antMatchers("/").permitAll() // доступность всем
+                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN") // разрешаем входить на /user пользователям с ролью User
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .and()
+                .formLogin().permitAll()  // Spring сам подставит свою логин форму
+                .successHandler(loginSuccessHandler) // подключаем наш SuccessHandler для перенеправления по ролям
+                .and()
+                .logout()
+                .permitAll()
+                .logoutSuccessUrl("/");
+    }
+
+    @Bean
+    @Override
+    public UserDetailsService userDetailsService() {
+        UserDetails user =
+                User.withDefaultPasswordEncoder()
+                        .username("user")
+                        .password("password")
+                        .roles("USER")
+                        .build();
+        return new InMemoryUserDetailsManager(user);
+    }
+
+    // Необходимо для шифрования паролей
+    // В данном примере не используется, отключен
+    @Bean
+    public static NoOpPasswordEncoder passwordEncoder() {
+        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+    }
+
+    /*@Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
@@ -67,5 +123,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
-    }
+    }*/
 }

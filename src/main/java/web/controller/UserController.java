@@ -1,6 +1,7 @@
 package web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -15,14 +16,14 @@ import java.util.List;
 @RequestMapping("/")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("hello")
+    @RequestMapping(value = "hello")
     public String printWelcome(ModelMap model) {
         List<String> messages = new ArrayList<>();
         messages.add("Hello!");
@@ -32,7 +33,7 @@ public class UserController {
         return "hello";
     }
 
-    @GetMapping("login")
+    @RequestMapping(value = "login")
     public String loginPage() {
         return "login";
     }
@@ -45,15 +46,13 @@ public class UserController {
     }
 
     @GetMapping("user")
-    public String infoUser(Model model, Long id) {
-        User user = userService.getUser(id);
+    public String infoUser(Model model, @AuthenticationPrincipal User user) {
         model.addAttribute("user", user);
         return "infoUser";
     }
 
     @GetMapping("admin")
-    public String infoAdmin(@RequestParam("id") Long id, Model model) {
-        User user = userService.getUser(id);
+    public String infoAdmin(Model model, @AuthenticationPrincipal User user) {
         model.addAttribute("user", user);
         return "infoAdmin";
     }
