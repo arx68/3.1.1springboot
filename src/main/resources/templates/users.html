@@ -29,7 +29,7 @@
         <td th:utext="${user.email}">Email</td>
         <td><a th:href="@{/admin/update(id=${user.id})}">Update</a></td>
         <td><a th:href="@{/admin/delete(id=${user.id})}">Delete</a></td>
-        >
+
         <td th:align="center" th:utext="${user.roles}">Roles</td>
         <p th:align="center" th:each="role,stat:${user.getRoles()}">
             <input type="text" th:name="roles[__${stat.index}__].id" th:value="${role.getId()}">

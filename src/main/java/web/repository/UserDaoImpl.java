@@ -10,7 +10,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-
 @Repository
 public class UserDaoImpl implements UserDao {
     private UserRepository userRepository;
@@ -26,9 +25,9 @@ public class UserDaoImpl implements UserDao {
     public void updateUser(Long id, User user) {
         User u = getUser(id);
         u.setLogin(user.getLogin());
-        u.setPassword(BCrypt.hashpw(user.getPassword(),BCrypt.gensalt()));
-        u.setLastName(user.getLastName());
+        u.setPassword(user.getPassword());
         u.setFirstName(user.getFirstName());
+        u.setLastName(user.getLastName());
         u.setEmail(user.getEmail());
         em.merge(u);
     }
@@ -45,7 +44,6 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void addUser(User user) {
-        user.setPassword(BCrypt.hashpw(user.getPassword(),BCrypt.gensalt()));
         userRepository.save(user);
     }
 
